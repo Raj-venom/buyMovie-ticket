@@ -12,15 +12,25 @@
 //   provider = "postgresql"
 // }
 
-
-
 generator client {
   provider = "prisma-client-js"
-    output   = "../src/generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+enum ShowStatus {
+  SCHEDULED
+  CANCELLED
+  COMPLETED
+}
+
+enum SeatType {
+  REGULAR
+  PREMIUM
+  RECLINER
 }
 
 enum SeatStatus {
@@ -32,15 +42,15 @@ enum SeatStatus {
 
 enum ReservationStatus {
   ACTIVE
-  EXPIRED
   CONFIRMED
+  EXPIRED
   CANCELLED
 }
 
 enum BookingStatus {
   PENDING_PAYMENT
   CONFIRMED
-  FAILED
+  PAYMENT_FAILED
   CANCELLED
 }
 
@@ -52,6 +62,8 @@ model Guest {
 
   reservations Reservation[]
   bookings     Booking[]
+
+  @@index([phone])
 }
 
 model Movie {
@@ -63,74 +75,83 @@ model Movie {
   createdAt   DateTime @default(now())
 
   shows Show[]
+
+  @@index([isActive])
 }
 
 model Theater {
   id        String   @id @default(uuid())
   name      String
   city      String
-  address   String?
   createdAt DateTime @default(now())
 
   screens Screen[]
+
+  @@index([city])
 }
 
 model Screen {
-  id         String   @id @default(uuid())
-  theaterId  String
-  name       String
-  totalSeats Int
+  id        String @id @default(uuid())
+  theaterId String
+  name      String
 
   theater Theater @relation(fields: [theaterId], references: [id])
   seats   Seat[]
   shows   Show[]
+
+  @@unique([theaterId, name])
+  @@index([theaterId])
 }
 
 model Seat {
-  id         String @id @default(uuid())
+  id         String   @id @default(uuid())
   screenId   String
   seatRow    String
   seatNumber Int
-  seatType   String @default("REGULAR")
+  seatType   SeatType @default(REGULAR)
 
-  screen    Screen      @relation(fields: [screenId], references: [id])
+  screen    Screen     @relation(fields: [screenId], references: [id])
   showSeats ShowSeat[]
 
   @@unique([screenId, seatRow, seatNumber])
+  @@index([screenId])
 }
 
 model Show {
-  id        String   @id @default(uuid())
+  id        String     @id @default(uuid())
   movieId   String
   screenId  String
   startTime DateTime
   endTime   DateTime
-  status    String   @default("SCHEDULED")
+  status    ShowStatus @default(SCHEDULED)
 
-  movie Movie @relation(fields: [movieId], references: [id])
-  screen Screen @relation(fields: [screenId], references: [id])
+  movie  Movie      @relation(fields: [movieId], references: [id])
+  screen Screen     @relation(fields: [screenId], references: [id])
+  seats  ShowSeat[]
 
-  showSeats    ShowSeat[]
   reservations Reservation[]
+
+  @@index([movieId, startTime])
+  @@index([screenId, startTime])
 }
 
 model ShowSeat {
-  id              String     @id @default(uuid())
-  showId          String
-  seatId          String
-  status          SeatStatus @default(AVAILABLE)
-  price           Decimal    @db.Decimal(10, 2)
-  reservationId   String?
-  reservedUntil   DateTime?
+  id            String     @id @default(uuid())
+  showId        String
+  seatId        String
+  status        SeatStatus @default(AVAILABLE)
+  price         Decimal    @db.Decimal(10, 2)
+  reservationId String?
+  reservedUntil DateTime?
 
-  show Show @relation(fields: [showId], references: [id])
-  seat Seat @relation(fields: [seatId], references: [id])
-
-  reservation Reservation? @relation(fields: [reservationId], references: [id])
+  show             Show              @relation(fields: [showId], references: [id])
+  seat             Seat              @relation(fields: [seatId], references: [id])
   reservationSeats ReservationSeat[]
 
   @@unique([showId, seatId])
   @@index([showId, status])
+  @@index([reservationId])
+  @@index([reservedUntil])
 }
 
 model Reservation {
@@ -146,9 +167,9 @@ model Reservation {
 
   seats   ReservationSeat[]
   booking Booking?
-  showSeats ShowSeat[]
 
-  @@index([status, expiresAt])
+  @@index([showId, status])
+  @@index([expiresAt])
 }
 
 model ReservationSeat {
@@ -159,6 +180,7 @@ model ReservationSeat {
   showSeat    ShowSeat    @relation(fields: [showSeatId], references: [id])
 
   @@id([reservationId, showSeatId])
+  @@index([showSeatId])
 }
 
 model Booking {
@@ -167,9 +189,12 @@ model Booking {
   guestId       String
   status        BookingStatus @default(PENDING_PAYMENT)
   totalAmount   Decimal       @db.Decimal(10, 2)
-  paymentRef    String?
+  ticketNumber  String?       @unique
   createdAt     DateTime      @default(now())
 
   reservation Reservation @relation(fields: [reservationId], references: [id])
   guest       Guest       @relation(fields: [guestId], references: [id])
+
+  @@index([guestId])
+  @@index([status])
 }
