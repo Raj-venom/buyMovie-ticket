@@ -1,0 +1,175 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+// generator client {
+//   provider = "prisma-client"
+//   output   = "../src/generated/prisma"
+// }
+
+// datasource db {
+//   provider = "postgresql"
+// }
+
+
+
+generator client {
+  provider = "prisma-client-js"
+    output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum SeatStatus {
+  AVAILABLE
+  RESERVED
+  BOOKED
+  UNAVAILABLE
+}
+
+enum ReservationStatus {
+  ACTIVE
+  EXPIRED
+  CONFIRMED
+  CANCELLED
+}
+
+enum BookingStatus {
+  PENDING_PAYMENT
+  CONFIRMED
+  FAILED
+  CANCELLED
+}
+
+model Guest {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String
+  createdAt DateTime @default(now())
+
+  reservations Reservation[]
+  bookings     Booking[]
+}
+
+model Movie {
+  id          String   @id @default(uuid())
+  title       String
+  durationMin Int
+  language    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  shows Show[]
+}
+
+model Theater {
+  id        String   @id @default(uuid())
+  name      String
+  city      String
+  address   String?
+  createdAt DateTime @default(now())
+
+  screens Screen[]
+}
+
+model Screen {
+  id         String   @id @default(uuid())
+  theaterId  String
+  name       String
+  totalSeats Int
+
+  theater Theater @relation(fields: [theaterId], references: [id])
+  seats   Seat[]
+  shows   Show[]
+}
+
+model Seat {
+  id         String @id @default(uuid())
+  screenId   String
+  seatRow    String
+  seatNumber Int
+  seatType   String @default("REGULAR")
+
+  screen    Screen      @relation(fields: [screenId], references: [id])
+  showSeats ShowSeat[]
+
+  @@unique([screenId, seatRow, seatNumber])
+}
+
+model Show {
+  id        String   @id @default(uuid())
+  movieId   String
+  screenId  String
+  startTime DateTime
+  endTime   DateTime
+  status    String   @default("SCHEDULED")
+
+  movie Movie @relation(fields: [movieId], references: [id])
+  screen Screen @relation(fields: [screenId], references: [id])
+
+  showSeats    ShowSeat[]
+  reservations Reservation[]
+}
+
+model ShowSeat {
+  id              String     @id @default(uuid())
+  showId          String
+  seatId          String
+  status          SeatStatus @default(AVAILABLE)
+  price           Decimal    @db.Decimal(10, 2)
+  reservationId   String?
+  reservedUntil   DateTime?
+
+  show Show @relation(fields: [showId], references: [id])
+  seat Seat @relation(fields: [seatId], references: [id])
+
+  reservation Reservation? @relation(fields: [reservationId], references: [id])
+  reservationSeats ReservationSeat[]
+
+  @@unique([showId, seatId])
+  @@index([showId, status])
+}
+
+model Reservation {
+  id        String            @id @default(uuid())
+  guestId   String
+  showId    String
+  status    ReservationStatus @default(ACTIVE)
+  expiresAt DateTime
+  createdAt DateTime          @default(now())
+
+  guest Guest @relation(fields: [guestId], references: [id])
+  show  Show  @relation(fields: [showId], references: [id])
+
+  seats   ReservationSeat[]
+  booking Booking?
+  showSeats ShowSeat[]
+
+  @@index([status, expiresAt])
+}
+
+model ReservationSeat {
+  reservationId String
+  showSeatId    String
+
+  reservation Reservation @relation(fields: [reservationId], references: [id])
+  showSeat    ShowSeat    @relation(fields: [showSeatId], references: [id])
+
+  @@id([reservationId, showSeatId])
+}
+
+model Booking {
+  id            String        @id @default(uuid())
+  reservationId String        @unique
+  guestId       String
+  status        BookingStatus @default(PENDING_PAYMENT)
+  totalAmount   Decimal       @db.Decimal(10, 2)
+  paymentRef    String?
+  createdAt     DateTime      @default(now())
+
+  reservation Reservation @relation(fields: [reservationId], references: [id])
+  guest       Guest       @relation(fields: [guestId], references: [id])
+}
