@@ -7,6 +7,8 @@ import healthRoute from './routes/health.route.js';
 import { notFound } from './middleware/not-found.js';
 import { errorHandler } from './middleware/error-handler.js';
 
+import apiRoutes from "./routes/index.js";
+
 const app = express();
 
 app.set('trust proxy', 1);
@@ -27,7 +29,7 @@ app.get('/', (_req, res) => {
 });
 
 app.use('/health', healthRoute);
-
+app.use("/api/v1", apiRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
