@@ -170,6 +170,7 @@ model Reservation {
 
   @@index([showId, status])
   @@index([expiresAt])
+  @@index([status, expiresAt])
 }
 
 model ReservationSeat {

@@ -3,8 +3,8 @@ import { redis } from "../../../redis/redis.js";
 import type { CreateReservationInput } from "./reservation.schema.js";
 import { ReservationError } from "../../../errors/reservation-error.js";
 import { Prisma } from "../../../generated/prisma/edge.js";
+import { RESERVATION_DURATION_MINUTES } from "../../../constant.js";
 
-const RESERVATION_DURATION_MINUTES = 10;
 
 export async function createReservation(
     input: CreateReservationInput,
