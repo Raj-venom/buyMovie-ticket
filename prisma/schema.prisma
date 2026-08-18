@@ -1,19 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
-// generator client {
-//   provider = "prisma-client"
-//   output   = "../src/generated/prisma"
-// }
-
-// datasource db {
-//   provider = "postgresql"
-// }
-
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
   output   = "../src/generated/prisma"
 }
 
@@ -42,7 +28,7 @@ enum SeatStatus {
 
 enum ReservationStatus {
   ACTIVE
-  CONFIRMED
+  COMPLETED
   EXPIRED
   CANCELLED
 }
@@ -50,20 +36,37 @@ enum ReservationStatus {
 enum BookingStatus {
   PENDING_PAYMENT
   CONFIRMED
-  PAYMENT_FAILED
   CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  WALLET
+}
+
+enum PaymentProvider {
+  ESEWA
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCESS
+  FAILED
+  CANCELLED
+  EXPIRED
+  REFUNDED
 }
 
 model Guest {
   id        String   @id @default(uuid())
   name      String
-  phone     String @unique
+  phone     String   @unique
   createdAt DateTime @default(now())
 
   reservations Reservation[]
   bookings     Booking[]
-
-  
 }
 
 model Movie {
@@ -147,6 +150,7 @@ model ShowSeat {
   show             Show              @relation(fields: [showId], references: [id])
   seat             Seat              @relation(fields: [seatId], references: [id])
   reservationSeats ReservationSeat[]
+  bookingSeats     BookingSeat[]
 
   @@unique([showId, seatId])
   @@index([showId, status])
@@ -167,6 +171,7 @@ model Reservation {
 
   seats   ReservationSeat[]
   booking Booking?
+  payment Payment?
 
   @@index([showId, status])
   @@index([expiresAt])
@@ -185,17 +190,122 @@ model ReservationSeat {
 }
 
 model Booking {
-  id            String        @id @default(uuid())
-  reservationId String        @unique
+  id String @id @default(uuid())
+
+  reservationId String @unique
+  paymentId     String @unique
   guestId       String
-  status        BookingStatus @default(PENDING_PAYMENT)
-  totalAmount   Decimal       @db.Decimal(10, 2)
-  ticketNumber  String?       @unique
-  createdAt     DateTime      @default(now())
+
+  status BookingStatus @default(PENDING_PAYMENT)
+
+  bookingNumber String @unique
+
+  subtotal    Decimal @db.Decimal(10, 2)
+  discount    Decimal @default(0) @db.Decimal(10, 2)
+  tax         Decimal @default(0) @db.Decimal(10, 2)
+  totalAmount Decimal @db.Decimal(10, 2)
+
+  currency String @default("NPR")
+
+  confirmedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   reservation Reservation @relation(fields: [reservationId], references: [id])
-  guest       Guest       @relation(fields: [guestId], references: [id])
+
+  payment Payment @relation(fields: [paymentId], references: [id])
+
+  guest Guest @relation(fields: [guestId], references: [id])
+
+  seats BookingSeat[]
 
   @@index([guestId])
   @@index([status])
+  @@index([createdAt])
+}
+
+model BookingSeat {
+  id String @id @default(uuid())
+
+  bookingId  String
+  showSeatId String
+
+  seatRow    String
+  seatNumber Int
+  seatType   SeatType
+
+  price Decimal @db.Decimal(10, 2)
+
+  createdAt DateTime @default(now())
+
+  booking Booking @relation(fields: [bookingId], references: [id])
+
+  showSeat ShowSeat @relation(fields: [showSeatId], references: [id])
+
+  @@unique([bookingId, showSeatId])
+  @@index([showSeatId])
+}
+
+model Payment {
+  id            String @id @default(uuid())
+  reservationId String @unique
+
+  method   PaymentMethod
+  provider PaymentProvider?
+
+  amount   Decimal @db.Decimal(10, 2)
+  currency String  @default("NPR")
+
+  status PaymentStatus @default(PENDING)
+
+  expiresAt DateTime
+  paidAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reservation Reservation @relation(fields: [reservationId], references: [id])
+
+  attempts PaymentAttempt[]
+  booking  Booking?
+
+  @@index([status])
+  @@index([expiresAt])
+  @@index([provider, status])
+}
+
+model PaymentAttempt {
+  id        String @id @default(uuid())
+  paymentId String
+
+  attemptNo Int
+
+  status PaymentStatus @default(PENDING)
+
+  amount Decimal @db.Decimal(10, 2)
+
+  idempotencyKey String @unique
+
+  providerTransactionId String?
+  providerReference     String?
+  providerBookingId     String?
+  providerCorrelationId String?
+
+  providerStatus   String?
+  providerResponse Json?
+
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  payment Payment @relation(fields: [paymentId], references: [id])
+
+  @@unique([paymentId, attemptNo])
+  @@index([paymentId, status])
+  @@index([providerTransactionId])
+  @@index([providerReference])
+  @@index([providerBookingId])
+  @@index([providerCorrelationId])
 }
