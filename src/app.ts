@@ -20,6 +20,13 @@ app.use(morgan('dev'));
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true }));
 
+
+// log the request method and URL for each incoming request
+app.use((req, _res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+
 app.get('/', (_req, res) => {
   res.json({
     service: 'movie-booking-system',
