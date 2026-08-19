@@ -284,14 +284,16 @@ model PaymentAttempt {
 
   amount Decimal @db.Decimal(10, 2)
 
-  idempotencyKey String @unique
+  idempotencyKey  String  @unique
+  transactionUuid String?
 
   providerTransactionId String?
   providerReference     String?
   providerBookingId     String?
   providerCorrelationId String?
 
-  providerStatus   String?
+  providerStatus String?
+
   providerResponse Json?
 
   startedAt   DateTime?
@@ -304,6 +306,7 @@ model PaymentAttempt {
 
   @@unique([paymentId, attemptNo])
   @@index([paymentId, status])
+  @@index([transactionUuid])
   @@index([providerTransactionId])
   @@index([providerReference])
   @@index([providerBookingId])
