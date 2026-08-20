@@ -1,0 +1,35 @@
+import { Router } from "express";
+import { createPaymentController, esewaFailureController, esewaSuccessController } from "./controller/payment.controller.js";
+
+
+import {
+    completeCashPaymentController,
+} from "./controller/complete-cash-payment.controller.js";
+
+const router = Router();
+
+router.post(
+    "/reservations/:reservationId/payments",
+    createPaymentController,
+);
+
+
+router.post(
+    "/payments/:paymentId/complete",
+    completeCashPaymentController,
+);
+
+
+router.get(
+    "/payments/esewa/success",
+    esewaSuccessController,
+);
+
+router.get(
+    "/payments/esewa/failure",
+    esewaFailureController,
+);
+
+
+
+export default router;

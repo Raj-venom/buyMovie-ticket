@@ -1,4 +1,4 @@
-export const RESERVATION_DURATION_MINUTES = 1;
+export const RESERVATION_DURATION_MINUTES = 5;
 
 
 
