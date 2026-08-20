@@ -2,8 +2,8 @@ import { prisma } from "../../../db/prisma.js";
 import { redis } from "../../../redis/redis.js";
 import type { CreateReservationInput } from "./reservation.schema.js";
 import { ReservationError } from "../../../errors/reservation-error.js";
-import { Prisma } from "../../../generated/prisma/edge.js";
 import { RESERVATION_DURATION_MINUTES } from "../../../constant.js";
+import { Prisma } from "../../../generated/prisma/client.js";
 
 
 export async function createReservation(
