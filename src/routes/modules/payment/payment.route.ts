@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { createPaymentController, esewaFailureController, esewaSuccessController } from "./controller/payment.controller.js";
+import { createPaymentController, esewaFailureController } from "./controller/payment.controller.js";
 
 
 import {
     completeCashPaymentController,
 } from "./controller/complete-cash-payment.controller.js";
+import { esewaSuccessController } from "./controller/esewa.controller.js";
 
 const router = Router();
 

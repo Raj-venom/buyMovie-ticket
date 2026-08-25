@@ -120,7 +120,7 @@ export async function createPaymentController(
 }
 
 
-export async function esewaSuccessController(
+export async function esewaSuccessController_old(
     req: Request,
     res: Response,
 ) {
