@@ -313,17 +313,3 @@ export async function esewaSuccessController_old(
         throw error;
     }
 }
-
-
-
-export async function esewaFailureController(
-    req: Request,
-    res: Response,
-) {
-
-    return res.status(200).json({
-        data: {
-            status: "PAYMENT_FAILED",
-        },
-    });
-}
