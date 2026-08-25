@@ -178,6 +178,8 @@ export async function createPayment(
                     },
                 });
 
+            const transactionUuid = `payment-${payment.id}`;
+
             /*
              * First payment attempt.
              */
@@ -193,9 +195,11 @@ export async function createPayment(
                             PaymentStatus.PENDING,
 
                         amount,
+                        transactionUuid,
 
                         idempotencyKey:
                             crypto.randomUUID(),
+                            providerStatus: "INITIATED",
 
                         startedAt: now,
                     },
@@ -248,17 +252,6 @@ export async function createPayment(
      * Step 3:
      * Store provider transaction information.
      */
-    await prisma.paymentAttempt.update({
-        where: {
-            id: result.attempt.id,
-        },
-        data: {
-            transactionUuid:
-                providerResult.form.transaction_uuid,
-
-            providerStatus: "INITIATED",
-        },
-    });
 
     return {
         payment: result.payment,

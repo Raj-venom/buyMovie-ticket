@@ -10,14 +10,13 @@ interface EsewaStatusResponse {
         | "AMBIGUOUS"
         | "NOT_FOUND"
         | "CANCELED";
+
     ref_id: string | null;
 }
-
 
 const ESEWA_STATUS_URL =
     process.env.ESEWA_STATUS_URL ??
     "https://rc.esewa.com.np/api/epay/transaction/status/";
-
 
 export async function verifyEsewaTransaction(
     transactionUuid: string,
@@ -44,8 +43,7 @@ export async function verifyEsewaTransaction(
         transactionUuid,
     );
 
-    const response =
-        await fetch(url);
+    const response = await fetch(url);
 
     if (!response.ok) {
         throw new Error(
@@ -53,5 +51,5 @@ export async function verifyEsewaTransaction(
         );
     }
 
-    return response.json();
+    return response.json() as Promise<EsewaStatusResponse>;
 }
