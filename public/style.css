@@ -1,0 +1,883 @@
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+
+    --text: #111827;
+    --text-muted: #6b7280;
+
+    --border: #d1d5db;
+    --background: #f3f4f6;
+    --card: #ffffff;
+
+    /* Seat status colors */
+    --available: #16a34a;
+    --selected: #2563eb;
+    --reserved: #f59e0b;
+    --booked: #dc2626;
+    --unavailable: #6b7280;
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+
+    min-height: 100vh;
+
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background: var(--background);
+
+    color: var(--text);
+}
+
+
+/* =========================================================
+   PAGE CONTAINER
+========================================================= */
+
+.container {
+    width: min(1100px, 94%);
+
+    margin: 40px auto;
+}
+
+
+/* =========================================================
+   HEADINGS
+========================================================= */
+
+h1 {
+    margin: 0 0 8px;
+
+    font-size: 30px;
+    line-height: 1.2;
+}
+
+h2 {
+    margin: 0 0 18px;
+
+    font-size: 22px;
+    line-height: 1.3;
+}
+
+h3 {
+    margin: 0 0 12px;
+
+    font-size: 18px;
+}
+
+.subtitle {
+    margin: 0 0 30px;
+
+    color: var(--text-muted);
+
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   SECTIONS / CARDS
+========================================================= */
+
+.section {
+    margin-bottom: 24px;
+
+    padding: 24px;
+
+    background: var(--card);
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 2px 8px
+        rgba(0, 0, 0, 0.05);
+}
+
+
+/* =========================================================
+   MOVIES
+========================================================= */
+
+#movies {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(220px, 1fr));
+
+    gap: 16px;
+}
+
+.movie {
+    padding: 18px;
+
+    background: #ffffff;
+
+    border: 2px solid var(--border);
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.15s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.movie:hover {
+    border-color: var(--primary);
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 5px 15px
+        rgba(37, 99, 235, 0.12);
+}
+
+.movie strong {
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-size: 17px;
+}
+
+.movie small {
+    color: var(--text-muted);
+}
+
+
+/* =========================================================
+   SHOWS
+========================================================= */
+
+#shows {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(220px, 1fr));
+
+    gap: 14px;
+}
+
+.show {
+    padding: 16px;
+
+    background: #ffffff;
+
+    border: 2px solid var(--border);
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.15s ease,
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.show:hover {
+    border-color: var(--primary);
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 4px 12px
+        rgba(0, 0, 0, 0.08);
+}
+
+.show strong {
+    display: block;
+
+    margin-bottom: 6px;
+}
+
+
+/* =========================================================
+   SHOW STATUS
+========================================================= */
+
+.show-status {
+    display: inline-block;
+
+    margin-top: 8px;
+
+    padding: 5px 10px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+.status-scheduled {
+    background: #2563eb;
+
+    color: #ffffff;
+}
+
+.status-cancelled {
+    background: #dc2626;
+
+    color: #ffffff;
+}
+
+.status-completed {
+    background: #16a34a;
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   GUEST FORM
+========================================================= */
+
+.form-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.form-group label {
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+.form-group input {
+    width: 100%;
+
+    padding: 12px 14px;
+
+    background: #ffffff;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    color: var(--text);
+
+    font-size: 15px;
+
+    outline: none;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.form-group input:focus {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.15);
+}
+
+.form-group input::placeholder {
+    color: #9ca3af;
+}
+
+
+/* =========================================================
+   SEAT SECTION
+========================================================= */
+
+.seat-section {
+    overflow-x: auto;
+}
+
+
+/* =========================================================
+   SEAT LEGEND
+========================================================= */
+
+.seat-legend {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    align-items: center;
+
+    gap: 14px 24px;
+
+    margin-bottom: 22px;
+
+    padding: 16px;
+
+    background: #ffffff;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+}
+
+.legend-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: var(--text);
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.legend-seat {
+    width: 24px;
+
+    height: 24px;
+
+    display: inline-block;
+
+    border-radius: 5px;
+
+    border: 2px solid transparent;
+}
+
+
+/* =========================================================
+   SEAT GRID
+========================================================= */
+
+.seat-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(8, 45px);
+
+    gap: 10px;
+
+    width: max-content;
+
+    margin-top: 10px;
+}
+
+
+/* =========================================================
+   BASE SEAT
+========================================================= */
+
+.seat {
+    width: 45px;
+
+    height: 42px;
+
+    padding: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: 2px solid transparent;
+
+    border-radius: 6px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.1s ease,
+        box-shadow 0.1s ease;
+}
+
+
+/* =========================================================
+   AVAILABLE
+   GREEN
+========================================================= */
+
+.seat.available,
+.legend-seat.available {
+    background-color: var(--available);
+
+    border-color: var(--available);
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   SELECTED
+   BLUE
+========================================================= */
+
+.seat.selected,
+.legend-seat.selected {
+    background-color: var(--selected);
+
+    border-color: var(--selected);
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   RESERVED
+   ORANGE / AMBER
+========================================================= */
+
+.seat.reserved,
+.legend-seat.reserved {
+    background-color: var(--reserved);
+
+    border-color: var(--reserved);
+
+    color: #ffffff;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   BOOKED
+   RED
+========================================================= */
+
+.seat.booked,
+.legend-seat.booked {
+    background-color: var(--booked);
+
+    border-color: var(--booked);
+
+    color: #ffffff;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   UNAVAILABLE
+   GRAY
+========================================================= */
+
+.seat.unavailable,
+.legend-seat.unavailable {
+    background-color: var(--unavailable);
+
+    border-color: var(--unavailable);
+
+    color: #ffffff;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   AVAILABLE HOVER
+========================================================= */
+
+.seat.available:hover {
+    transform: scale(1.06);
+
+    box-shadow:
+        0 4px 10px
+        rgba(0, 0, 0, 0.2);
+}
+
+
+/* =========================================================
+   SELECTED HIGHLIGHT
+========================================================= */
+
+.seat.selected {
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.25);
+}
+
+
+/* =========================================================
+   DISABLED
+========================================================= */
+
+.seat:disabled {
+    opacity: 1;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   SEAT SUMMARY
+========================================================= */
+
+.selection-summary {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-top: 24px;
+
+    padding: 16px 18px;
+
+    background: #f9fafb;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+}
+
+.selection-summary strong {
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   PAYMENT SECTION
+========================================================= */
+
+.payment-section {
+    margin-top: 24px;
+}
+
+
+/* =========================================================
+   PAYMENT METHOD
+========================================================= */
+
+.payment-method {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    margin-bottom: 18px;
+}
+
+.payment-option {
+    padding: 10px 16px;
+
+    background: #ffffff;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    color: var(--text);
+
+    cursor: pointer;
+}
+
+.payment-option.active {
+    background: #eff6ff;
+
+    border-color: var(--primary);
+
+    color: var(--primary-dark);
+}
+
+
+/* =========================================================
+   PAY BUTTON
+========================================================= */
+
+#payButton {
+    width: 100%;
+
+    padding: 14px 20px;
+
+    background: var(--primary);
+
+    border: none;
+
+    border-radius: 8px;
+
+    color: #ffffff;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        transform 0.1s ease;
+}
+
+#payButton:hover:not(:disabled) {
+    background: var(--primary-dark);
+
+    transform: translateY(-1px);
+}
+
+#payButton:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+#payButton:disabled {
+    background: #9ca3af;
+
+    color: #ffffff;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+#message {
+    margin-top: 16px;
+
+    padding: 12px 14px;
+
+    background: #f9fafb;
+
+    border: 1px solid var(--border);
+
+    border-radius: 8px;
+
+    color: #374151;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.loading {
+    padding: 20px;
+
+    color: var(--text-muted);
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.error {
+    padding: 14px;
+
+    background: #dc2626;
+
+    border: 1px solid #b91c1c;
+
+    border-radius: 8px;
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   GENERAL STATUS BADGES
+========================================================= */
+
+.status-available {
+    background: var(--available);
+
+    color: #ffffff;
+}
+
+.status-selected {
+    background: var(--selected);
+
+    color: #ffffff;
+}
+
+.status-reserved {
+    background: var(--reserved);
+
+    color: #ffffff;
+}
+
+.status-booked {
+    background: var(--booked);
+
+    color: #ffffff;
+}
+
+.status-unavailable {
+    background: var(--unavailable);
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   PAYMENT STATUS
+========================================================= */
+
+.status-pending {
+    background: var(--reserved);
+
+    color: #ffffff;
+}
+
+.status-processing {
+    background: var(--primary);
+
+    color: #ffffff;
+}
+
+.status-success {
+    background: var(--available);
+
+    color: #ffffff;
+}
+
+.status-failed {
+    background: var(--booked);
+
+    color: #ffffff;
+}
+
+.status-cancelled {
+    background: var(--booked);
+
+    color: #ffffff;
+}
+
+.status-expired {
+    background: var(--unavailable);
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .container {
+        width: 94%;
+
+        margin: 24px auto;
+    }
+
+    .section {
+        padding: 18px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .seat-grid {
+        grid-template-columns:
+            repeat(6, 45px);
+    }
+
+    .seat-legend {
+        gap: 12px 18px;
+    }
+
+    .selection-summary {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    h1 {
+        font-size: 25px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    .container {
+        margin: 18px auto;
+    }
+
+    .section {
+        padding: 15px;
+    }
+
+    .seat-grid {
+        grid-template-columns:
+            repeat(5, 42px);
+
+        gap: 8px;
+    }
+
+    .seat {
+        width: 42px;
+
+        height: 40px;
+    }
+
+    .legend-seat {
+        width: 22px;
+
+        height: 22px;
+    }
+
+    .legend-item {
+        font-size: 13px;
+    }
+}

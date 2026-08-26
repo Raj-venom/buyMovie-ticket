@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Movie Booking Test</title>
+
+    <link rel="stylesheet" href="/style.css">
+
+    
+
+</head>
+
+<body>
+
+<h1>Movie Booking</h1>
+
+<div class="section">
+    <h2>1. Select Movie</h2>
+
+    <div id="movies">
+        Loading movies...
+    </div>
+</div>
+
+
+<div class="section">
+    <h2>2. Select Show</h2>
+
+    <div id="shows">
+        Select a movie first.
+    </div>
+</div>
+
+
+<div class="section">
+    <h2>3. Select Seats</h2>
+
+    <div id="seats">
+        Select a show first.
+    </div>
+
+    <p>
+        Selected seats:
+        <strong id="selectedSeats">0</strong>
+    </p>
+</div>
+
+
+<div class="section">
+
+    <h2>4. Guest Information</h2>
+
+    <input
+        id="guestName"
+        type="text"
+        placeholder="Your name"
+    />
+
+    <input
+        id="guestPhone"
+        type="text"
+        placeholder="Phone number"
+    />
+
+</div>
+
+
+<div class="section">
+
+    <h2>5. Payment</h2>
+
+    <button
+        id="payButton"
+        disabled
+    >
+        Continue to eSewa
+    </button>
+
+    <div id="message"></div>
+
+</div>
+<script src="/booking.js" defer></script>
+
+</body>
+</html>
