@@ -26,7 +26,7 @@ const ESEWA_FAILURE_URL =
     "http://localhost:3000/api/v1/payments/esewa/failure";
 
 
-function generateSignature(
+function generateSignature2(
     totalAmount: string,
     transactionUuid: string,
     productCode: string,
@@ -41,6 +41,41 @@ function generateSignature(
         .createHmac("sha256", ESEWA_SECRET_KEY)
         .update(message)
         .digest("base64");
+}
+
+
+function generateSignature(
+    totalAmount: string,
+    transactionUuid: string,
+    productCode: string,
+): string {
+
+    const message =
+        `total_amount=${totalAmount},` +
+        `transaction_uuid=${transactionUuid},` +
+        `product_code=${productCode}`;
+
+    console.log("eSewa signature message:", message);
+
+    console.log(
+        "eSewa secret key:",
+        JSON.stringify(ESEWA_SECRET_KEY),
+    );
+
+    const signature = crypto
+        .createHmac(
+            "sha256",
+            ESEWA_SECRET_KEY,
+        )
+        .update(message, "utf8")
+        .digest("base64");
+
+    console.log(
+        "eSewa generated signature:",
+        signature,
+    );
+
+    return signature;
 }
 
 export class EsewaProvider implements PaymentProvider {
