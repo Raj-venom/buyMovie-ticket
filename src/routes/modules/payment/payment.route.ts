@@ -5,7 +5,8 @@ import { createPaymentController } from "./controller/payment.controller.js";
 import {
     completeCashPaymentController,
 } from "./controller/complete-cash-payment.controller.js";
-import { esewaFailureController, esewaSuccessController } from "./controller/esewa.controller.js";
+import { esewaSuccessController } from "./controller/esewa.controller.js";
+import { esewaFailureController } from "./controller/esewa-failure.controller.js";
 
 const router = Router();
 
